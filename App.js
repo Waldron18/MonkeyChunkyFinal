@@ -1,38 +1,72 @@
 import * as React from "react";
-import { View, StyleSheet, TextInput, TouchableOpacity, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  Image
+} from "react-native";
 import { Header } from "react-native-elements";
+import db from "./localDb";
+import PhonicButton from "./component/PhonicButton";
 
 export default class App extends React.Component {
-  constructor(){
+  constructor() {
     super();
-    this.state={
+    this.state = {
       text: "",
-      displayText:""
-    }
+      displayText: "",
+      chunks: [],
+      phoneme: []
+    };
   }
 
   render() {
-    return <View style={styles.container}>
-      <Header
-      backgroundColor={'orange'}
-      centerComponent={{text:"Monkey Chunky", style:styles.header}}
-      />
-      <TextInput style={styles.inputtext} onChangeText={(text)=>{
-        this.setState({
-          text: text
-        })
-      }}/>
-      <TouchableOpacity style={styles.button}
-      onPress={()=>{
-        this.setState({
-          displayText: text
-        })
-      }}>
-        <Text style={styles.buttontext}>
-          SUBMIT
-        </Text>
-      </TouchableOpacity>
-    </View>;
+    return (
+      <View style={styles.container}>
+        <Header
+          backgroundColor={"orange"}
+          centerComponent={{ text: "Monkey Chunky", style: styles.header }}
+        />
+
+        <Image 
+        style={styles.image}
+        source={
+          require("./assets/life.png")
+        }
+        />
+
+        <TextInput
+          style={styles.inputtext}
+          onChangeText={(text) => {
+            this.setState({
+              text: text,
+            });
+          }}
+        />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            this.setState({
+              chunks: db[this.state.text].chunks,
+              phoneme: db[this.state.text].phones
+            });
+          }}
+        >
+          <Text style={styles.buttontext}>SUBMIT</Text>
+        </TouchableOpacity>
+        <View>
+          {this.state.chunks.map((chunk,index) => {
+            console.log(this.state.phoneme[index])
+
+            return (
+              <PhonicButton chunks={chunk} phones={this.state.phoneme[index]}/>
+            );
+          })}
+        </View>
+      </View>
+    );
   }
 }
 
@@ -43,27 +77,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
   },
-  header:{
-    color: 'red',
-    fontSize:18,
-    fontWeight:"bold"
+  header: {
+    color: "red",
+    fontSize: 18,
+    fontWeight: "bold",
   },
-  inputtext:{
-    borderWidth:0.5,
-    marginTop:200,
-    padding:10,
+  inputtext: {
+    borderWidth: 0.5,
+    marginTop: 50,
+    padding: 10,
     width: "80%",
-    textAlign:'center'
+    textAlign: "center",
   },
-  buttontext:{
-    color:'red'
+  buttontext: {
+    color: "red",
   },
-  button:{
-    backgroundColor:'yellow',
-    marginTop:50,
-    padding:10,
+  button: {
+    backgroundColor: "yellow",
+    marginTop: 50,
+    padding: 10,
     width: "50%",
-    alignItems:'center',
-    borderRadius:10
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  chunkButton: {
+    backgroundColor: "lightgrey",
+    padding: 20,
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  image: {
+    width:100,
+    height:100
   }
 });
