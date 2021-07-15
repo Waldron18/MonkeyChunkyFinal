@@ -5,7 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
-  Image
+  Image,
+  Alert,
 } from "react-native";
 import { Header } from "react-native-elements";
 import db from "./localDb";
@@ -18,7 +19,7 @@ export default class App extends React.Component {
       text: "",
       displayText: "",
       chunks: [],
-      phoneme: []
+      phoneme: [],
     };
   }
 
@@ -30,12 +31,7 @@ export default class App extends React.Component {
           centerComponent={{ text: "Monkey Chunky", style: styles.header }}
         />
 
-        <Image 
-        style={styles.image}
-        source={
-          require("./assets/life.png")
-        }
-        />
+        <Image style={styles.image} source={require("./assets/life.png")} />
 
         <TextInput
           style={styles.inputtext}
@@ -48,20 +44,27 @@ export default class App extends React.Component {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            this.setState({
-              chunks: db[this.state.text].chunks,
-              phoneme: db[this.state.text].phones
-            });
+            var word = this.state.text.toLowerCase().trim();
+            db[word]
+              ? this.setState({
+                  chunks: db[word].chunks,
+                  phoneme: db[word].phones,
+                })
+              : Alert.alert("THE WORD DOES NOT EXIST IN THE DATABASE");
           }}
         >
           <Text style={styles.buttontext}>SUBMIT</Text>
         </TouchableOpacity>
         <View>
-          {this.state.chunks.map((chunk,index) => {
-            console.log(this.state.phoneme[index])
+          {this.state.chunks.map((chunk, index) => {
+            console.log(this.state.phoneme[index]);
 
             return (
-              <PhonicButton chunks={chunk} phones={this.state.phoneme[index]}/>
+              <PhonicButton
+                chunks={chunk}
+                phones={this.state.phoneme[index]}
+                buttonIndex={index}
+              />
             );
           })}
         </View>
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   image: {
-    width:100,
-    height:100
-  }
+    width: 100,
+    height: 100,
+  },
 });
